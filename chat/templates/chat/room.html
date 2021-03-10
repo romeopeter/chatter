@@ -11,8 +11,8 @@
   {{ room_name|json_script:"room-name" }}
   <script>
     const roomName =  JSON.parse(document.querySelector("#room-name").textContent);
-    const chatLog = document.querySelector("chat-log");
-    const chatMessageInput = document.querySelector("#chat-message-input").focus();
+    const chatLog = document.querySelector("#chat-log");
+    const chatMessageInput = document.querySelector("#chat-message-input");
     const chatMessageSubmit = document.querySelector("#chat-message-submit");
     let chatSocket = undefined;
 
@@ -21,15 +21,15 @@
 
     // Listen for message
     chatSocket.onmessage = (e) => {
-      console.log(e.data);
-    /*  const date = JSON.parse(e.data);
-      chatLog.value += data.message + '\n'*/
-    }
+      const data = JSON.parse(e.data);
+      chatLog.value += data.message + '\n'
+    };
 
     // Log error if socket is closed
     chatSocket.onclose = () => console.error("Chat closed unexpectedly");
 
     // Enter message and send if user clicks 'Enter' button
+    chatMessageInput.focus();
     chatMessageInput.onkeyup = (e) => {
       if (e.keyCode == 13) { // Enter, return
         chatMessageSubmit.click();
@@ -39,11 +39,17 @@
     // Send message inputs
     chatMessageSubmit.onclick = (e) => {
       const message = chatMessageInput.value;
-      chatSocket.Send(JSON.stringify({
+      chatSocket.send(JSON.stringify({
         "message": message
       }));
+
       chatMessageInput.value = "";
     }
   </script>
 </body>
 </html>
+
+<!--
+NEXT: Enabling Channel layer
+CURRENT ISSUE: Consumer not sending back socket message
+ -->
